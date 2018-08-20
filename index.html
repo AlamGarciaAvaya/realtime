@@ -128,19 +128,22 @@
 <body class="text-center">
 
   <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
-
-
     <main role="main" class="inner cover">
     <h1 class="cover-heading">Selecciona el Audio (AMR)</h1>
+    <h4 class="cover-heading">El Audio no debe durar más de 45 segundos</h1>
       <input type="file">
       <div>
         <textarea id="encodedResult" hidden>
         </textarea>
         <h1 class="cover-heading">Selecciona el idioma</h1>
         <div class="form-group">
-     <select class="form-control" id="idioma">
-       <option>Español</option>
-       <option>Inglés</option>
+     <select class="form-control" id="langcodeselect">
+       <option value="es-MX">Español (México)</option>
+       <option value="es-AR">Español (Argentina)</option>
+       <option value="es-BO">Español (Bolivia)</option>
+       <option value="es-PE">Español (Perú)</option>
+       <option value="en-US">English (United States)</option>
+       <option value="en-GB">English (Great Britain)</option>
      </select>
    </div>
       </div>
@@ -236,12 +239,14 @@
 
     }
     $("button#procesar").click(function() {
+      var langcode = $( "#langcodeselect" ).val();
       var base64data = $("textarea#encodedResult").val();
+      console.log(langcode);
       var data = JSON.stringify({
         "config": {
           "encoding": "AMR",
           "sampleRateHertz": 8000,
-          "languageCode": "es-MX",
+          "languageCode": langcode,
           "maxAlternatives": 1,
           "profanityFilter": true,
           "enableWordTimeOffsets": false
