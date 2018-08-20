@@ -9,6 +9,12 @@
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
   <style>
+  h2.modal2 {
+      color: black;
+  }
+  span#amr-record-duration {
+    color: black;
+}
     /*
  * Globals
  */
@@ -18,7 +24,7 @@
     a,
     a:focus,
     a:hover {
-      color: #fff;
+      color: #000;
     }
 
     /* Custom default button */
@@ -123,14 +129,66 @@
       color: rgba(255, 255, 255, .5);
     }
   </style>
+  <style>
+  div#player-amr {
+  display: none;
+}
+  </style>
 </head>
 
 <body class="text-center">
 
   <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
     <main role="main" class="inner cover">
+    <h1 class="cover-heading">Grabar Audio</h1>
+    <button type="button" class="btn btn-success btn-lg btn-block" data-toggle="modal" data-target="#exampleModal">
+  Abrir Grabadora
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="player-amr">
+            <p>
+                Load demo file: <button id="amr-load">Load & Decode</button>
+            </p>
+            <p>
+                Load a local file: <input type="file" id="amr-file" accept=".amr">
+            </p>
+            <p>
+                <button id="amr-play" disabled>Play</button>
+                <span id="amr-duration">0'</span>
+            </p>
+        </div>
+        <h2 class="modal2">Grabar</h2>
+        <div id="recorder-amr">
+            <p>
+                <button id="amr-record">Grabar</button>
+            </p>
+            <p>
+                <button id="amr-play-record" disabled>Detener</button>
+                <a href="#" id="amr-down-record"></a>
+                <span id="amr-record-duration">0'</span>
+            </p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+
+      </div>
+    </div>
+  </div>
+</div>
     <h1 class="cover-heading">Selecciona el Audio (AMR)</h1>
-    <h4 class="cover-heading">El Audio no debe durar más de 45 segundos</h1>
+
       <input type="file">
       <div>
         <textarea id="encodedResult" hidden>
@@ -180,6 +238,7 @@
   <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<script src="amr.js"></script>
   <script>
     var context = new AudioContext();
     var source = null;
@@ -284,7 +343,104 @@
 
     });
   </script>
+  <script>
+      (function () {
+          function E(selector) {
+              return document.querySelector(selector);
+          }
 
+          /**** Decode & Play ****/
+
+          var amr;
+
+          var loadDemoBtn = E('#amr-load');
+          var loadAmrFile = E('#amr-file');
+          var playBtn = E('#amr-play');
+          var duration = E('#amr-duration');
+
+          loadDemoBtn.onclick = function() {
+              amr = new BenzAMRRecorder();
+              loadDemoBtn.setAttribute('disabled', true);
+              loadAmrFile.setAttribute('disabled', true);
+              playBtn.setAttribute('disabled', true);
+              amr.initWithUrl('./res/mario.amr').then(function () {
+                  loadDemoBtn.removeAttribute('disabled');
+                  loadAmrFile.removeAttribute('disabled');
+                  playBtn.removeAttribute('disabled');
+                  duration.innerHTML = amr.getDuration().toFixed(2) + '\'';
+              });
+          };
+
+          playBtn.onclick = function () {
+              if (amr.isPlaying()) {
+                  amr.stop();
+                  playBtn.innerHTML = 'Play';
+              } else {
+                  amr.play();
+                  playBtn.innerHTML = 'Stop';
+                  amr.onEnded(function () {
+                      playBtn.innerHTML = 'Play';
+                  });
+              }
+          };
+
+          loadAmrFile.onchange = function() {
+              amr = new BenzAMRRecorder();
+              loadDemoBtn.setAttribute('disabled', true);
+              loadAmrFile.setAttribute('disabled', true);
+              playBtn.setAttribute('disabled', true);
+              amr.initWithBlob(this.files[0]).then(function () {
+                  loadDemoBtn.removeAttribute('disabled');
+                  loadAmrFile.removeAttribute('disabled');
+                  playBtn.removeAttribute('disabled');
+                  duration.innerHTML = amr.getDuration().toFixed(2) + '\'';
+              });
+          };
+
+          /***** Record & Encode *****/
+
+          var amrForRecorder;
+
+          var recordBtn = E('#amr-record');
+          var playRecordBtn = E('#amr-play-record');
+          var downRecordLink = E('#amr-down-record');
+          var recordDuration = E('#amr-record-duration');
+
+          recordBtn.onclick = function () {
+              if (amrForRecorder && amrForRecorder.isRecording()) {
+                  recordBtn.innerHTML = 'Grabar';
+                  playRecordBtn.removeAttribute('disabled');
+                  amrForRecorder.finishRecord().then(() => {
+                      downRecordLink.href = window.URL.createObjectURL(amrForRecorder.getBlob());
+                      downRecordLink.innerHTML = 'Descargar';
+                      recordDuration.innerHTML = amrForRecorder.getDuration().toFixed(2) + '\'';
+                  });
+              } else {
+                  recordBtn.innerHTML = 'Detener';
+                  playRecordBtn.setAttribute('disabled', true);
+                  amrForRecorder = new BenzAMRRecorder();
+                  amrForRecorder.initWithRecord().then(() => {
+                      amrForRecorder.startRecord();
+                  }).catch(function(e) {
+                      alert(JSON.stringify(e));
+                  });
+              }
+          };
+
+          playRecordBtn.onclick = function () {
+              if (amrForRecorder.isPlaying()) {
+                  amrForRecorder.stop();
+                  playRecordBtn.innerHTML = 'Reproducir';
+              } else {
+                  amrForRecorder.play();
+                  playRecordBtn.innerHTML = 'Detener';
+                  amrForRecorder.onEnded(function () {
+                      playRecordBtn.innerHTML = 'Play Record';
+                  });
+              }
+          };
+      })();
+  </script>
 
 </body>
 
