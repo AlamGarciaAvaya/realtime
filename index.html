@@ -191,9 +191,9 @@
       </div>
       <h1 class="cover-heading">Selecciona el Audio (AMR)</h1>
 
-      <input type="file">
+      <input type="file" id="filePicker">
       <div>
-        <textarea id="encodedResult" hidden>
+        <textarea id="encodedResult">
         </textarea>
         <h1 class="cover-heading">Selecciona el idioma</h1>
         <div class="form-group">
@@ -242,63 +242,27 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
   <script src="amr.js"></script>
   <script>
-    var context = new AudioContext();
-    var source = null;
-    var audioBuffer = null;
-    var bufferToBase64 = function(buffer) {
-      var bytes = new Uint8Array(buffer);
-      var len = buffer.byteLength;
-      var binary = "";
-      for (var i = 0; i < len; i++) {
-        binary += String.fromCharCode(bytes[i]);
-      }
-      return window.btoa(binary);
-    };
-    var base64ToBuffer = function(buffer) {
-      var binary = window.atob(buffer);
-      var buffer = new ArrayBuffer(binary.length);
-      var bytes = new Uint8Array(buffer);
-      for (var i = 0; i < buffer.byteLength; i++) {
-        bytes[i] = binary.charCodeAt(i) & 0xFF;
-      }
-      return buffer;
-    };
+  var handleFileSelect = function(evt) {
+    var files = evt.target.files;
+    var file = files[0];
 
-    function initSound(arrayBuffer) {
-      var base64String = bufferToBase64(arrayBuffer);
-      var audioFromString = base64ToBuffer(base64String);
-      document.getElementById("encodedResult").value = base64String;
-      context.decodeAudioData(audioFromString, function(buffer) {
-        audioBuffer = buffer;
-        //$("button#procesar").removeAttr("disabled");
-        $("textarea#resultado").val('');
-        $("input#precision").val('');
+    if (files && file) {
+        var reader = new FileReader();
 
-      }, function(e) {
-        console.log('Error decoding file', e);
-      });
+        reader.onload = function(readerEvt) {
+            var binaryString = readerEvt.target.result;
+            document.getElementById("encodedResult").value = btoa(binaryString);
+        };
+
+        reader.readAsBinaryString(file);
     }
-    var fileInput = document.querySelector('input[type="file"]');
-    fileInput.addEventListener('change', function(e) {
-      var reader = new FileReader();
-      reader.onload = function(e) {
-        initSound(this.result);
-      };
-      reader.readAsArrayBuffer(this.files[0]);
-    }, false);
-    // Load file from a URL as an ArrayBuffer.
-    // Example: loading via xhr2: loadSoundFile('sounds/test.mp3');
-    function loadSoundFile(url) {
-      var xhr = new XMLHttpRequest();
-      xhr.open('GET', url, true);
-      xhr.responseType = 'arraybuffer';
-      xhr.onload = function(e) {
-        initSound(this.response);
+};
 
-      };
-      xhr.send();
-
-    }
+if (window.File && window.FileReader && window.FileList && window.Blob) {
+    document.getElementById('filePicker').addEventListener('change', handleFileSelect, false);
+} else {
+    alert('Tu navegador no soporta este evento.');
+}
     $("button#procesar").click(function() {
       var langcode = $("#langcodeselect").val();
       var base64data = $("textarea#encodedResult").val();
