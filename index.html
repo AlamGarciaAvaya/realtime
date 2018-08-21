@@ -190,8 +190,15 @@
         </div>
       </div>
       <h1 class="cover-heading">Selecciona el Audio (AMR)</h1>
-
-      <input type="file" id="filePicker">
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="inputGroupFileAddon01">Subir Archivo</span>
+        </div>
+        <div class="custom-file">
+          <input type="file" class="custom-file-input" id="filePicker" aria-describedby="inputGroupFileAddon01">
+          <label class="custom-file-label" for="inputGroupFile01"></label>
+        </div>
+      </div>
       <div>
         <textarea id="encodedResult" hidden>
         </textarea>
@@ -384,6 +391,7 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
           playRecordBtn.removeAttribute('disabled');
           amrForRecorder.finishRecord().then(() => {
             downRecordLink.href = window.URL.createObjectURL(amrForRecorder.getBlob());
+            console.log(amrForRecorder.getBlob());
             downRecordLink.innerHTML = 'Descargar';
             recordDuration.innerHTML = amrForRecorder.getDuration().toFixed(2) + '\'';
           });
