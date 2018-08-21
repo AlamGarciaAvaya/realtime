@@ -18,6 +18,8 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
 } else {
   alert('Tu navegador no soporta este evento.');
 }
+
+
 $("button#procesar").click(function() {
   var langcode = $("#langcodeselect").val();
   var base64data = $("textarea#encodedResult").val();
@@ -57,6 +59,34 @@ $("button#procesar").click(function() {
 
 });
 
+
+
+//Boton Watson
+$("button#intencion").click(function() {
+  var data = new FormData();
+  data.append("textoa", $("textarea#resultado").val());
+
+
+  var xhr = new XMLHttpRequest();
+  xhr.withCredentials = true;
+
+  xhr.addEventListener("readystatechange", function() {
+    if (this.readyState === 4) {
+      var rwatson = JSON.parse(this.responseText);
+      console.log(rwatson);
+    }
+  });
+
+  xhr.open("POST", "https://pruebas.aprimerpalo.com/speech/php/index.php");
+  xhr.setRequestHeader("Cache-Control", "no-cache");
+  xhr.setRequestHeader("Postman-Token", "24583018-557f-45ac-b166-728fd3f13f2a");
+
+  xhr.send(data);
+
+
+});
+
+//Watson
 
 $("button#restart").click(function() {
   location.reload();
