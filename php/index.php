@@ -6,19 +6,22 @@ function encodeURIComponent($str) {
 }
 
 $texto =  $_POST["textoa"];
-$texto = encodeURIComponent($texto);
+
 
 
 $ch = curl_init();
 
-curl_setopt($ch, CURLOPT_URL, "https://gateway.watsonplatform.net/tone-analyzer/api/v3/tone?version=2017-09-21&text={$texto}");
+curl_setopt($ch, CURLOPT_URL, "https://gateway.watsonplatform.net/assistant/api/v1/workspaces/c415c64c-64d6-43d3-92f7-cc3be92f2b55/message?version=2018-07-10");
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+curl_setopt($ch, CURLOPT_POSTFIELDS, "{\"input\": {\"text\": \"{$texto}\"}}");
+curl_setopt($ch, CURLOPT_POST, 1);
+curl_setopt($ch, CURLOPT_USERPWD, "b194dca5-f290-4af5-826a-de71217db50a" . ":" . "ZIrFXSd1exPG");
 
-curl_setopt($ch, CURLOPT_USERPWD, "902d6228-8e62-4c1e-8aa3-cb81d6f55cc2" . ":" . "CBoYepyVoWjS");
+$headers = array();
+$headers[] = "Content-Type: application/json";
+curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
 $result = curl_exec($ch);
-json_encode($result);
 echo $result;
 if (curl_errno($ch)) {
     echo 'Error:' . curl_error($ch);

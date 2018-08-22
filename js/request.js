@@ -74,6 +74,18 @@ $("button#intencion").click(function() {
     if (this.readyState === 4) {
       var rwatson = JSON.parse(this.responseText);
       console.log(rwatson);
+      console.log(rwatson.intents[0].intent);
+      $("input#intent").val(rwatson.intents[0].intent);
+
+      for(var i = 0; i < rwatson.length; ++i){
+   //do something with obj[i]
+   for(var ind in obj[i]) {
+        console.log(ind);
+        for(var vals in obj[i][ind]){
+            console.log(vals, obj[i][ind][vals]);
+        }
+   }
+}
     }
   });
 
