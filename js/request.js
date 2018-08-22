@@ -79,7 +79,7 @@ $("button#intencion").click(function() {
   xhr.addEventListener("readystatechange", function() {
     if (this.readyState === 4) {
       var rwatson = JSON.parse(this.responseText);
-      $('.ajax-loader2').css("visibility", "hidden");
+      $('.ajax-loader').css("visibility", "hidden");
       console.log(rwatson);
     }
   });
