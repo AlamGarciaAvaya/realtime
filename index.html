@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
 
 <head>
   <!-- Required meta tags -->
@@ -12,7 +12,9 @@
 </head>
 
 <body class="text-center">
-
+  <div class="ajax-loader">
+  <img src="sources/loader.gif" class="img-responsive" />
+</div>
   <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
     <main role="main" class="inner cover">
       <h1 class="cover-heading">Grabar Audio</h1>
@@ -62,6 +64,8 @@
           </div>
         </div>
       </div>
+
+
       <h1 class="cover-heading">Selecciona el Audio (AMR)</h1>
       <div class="input-group mb-3">
         <div class="input-group-prepend">
@@ -107,6 +111,7 @@
           <span class="input-group-text">%</span>
         </div>
       </div>
+
       <button type="button" class="btn btn-warning btn-lg btn-block" id="intencion">Detectar intencion</button>
       <div class="input-group mb-3">
         <div class="input-group-prepend">

@@ -42,6 +42,9 @@ $("button#procesar").click(function() {
     "crossDomain": true,
     "url": "https://speech.googleapis.com/v1/speech:recognize?key=AIzaSyDjFb-kHwyIdaQrjIRV_v_pJYpGWpBhKps",
     "method": "POST",
+    beforeSend: function(){
+    $('.ajax-loader').css("visibility", "visible");
+  },
     "headers": {
       "Content-Type": "application/json",
       "Cache-Control": "no-cache"
@@ -53,39 +56,31 @@ $("button#procesar").click(function() {
 
   $.ajax(settings).done(function(response) {
     console.log(response);
+
     $("textarea#resultado").val(response.results["0"].alternatives["0"].transcript);
     $("input#precision").val(response.results["0"].alternatives["0"].confidence * 100);
+    $('.ajax-loader').css("visibility", "hidden");
   });
+
 
 });
 
 
 
+
 //Boton Watson
 $("button#intencion").click(function() {
+  $('.ajax-loader').css("visibility", "visible");
   var data = new FormData();
   data.append("textoa", $("textarea#resultado").val());
 
-
   var xhr = new XMLHttpRequest();
   xhr.withCredentials = true;
-
   xhr.addEventListener("readystatechange", function() {
     if (this.readyState === 4) {
       var rwatson = JSON.parse(this.responseText);
+      $('.ajax-loader2').css("visibility", "hidden");
       console.log(rwatson);
-      console.log(rwatson.intents[0].intent);
-      $("input#intent").val(rwatson.intents[0].intent);
-
-      for(var i = 0; i < rwatson.length; ++i){
-   //do something with obj[i]
-   for(var ind in obj[i]) {
-        console.log(ind);
-        for(var vals in obj[i][ind]){
-            console.log(vals, obj[i][ind][vals]);
-        }
-   }
-}
     }
   });
 
