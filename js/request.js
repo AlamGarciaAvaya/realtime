@@ -79,9 +79,15 @@ $("button#intencion").click(function() {
   xhr.addEventListener("readystatechange", function() {
     if (this.readyState === 4) {
       var rwatson = JSON.parse(this.responseText);
+      try{
       console.log(rwatson.intents["0"].intent);
       $("input#intent").val(rwatson.intents["0"].intent);
       $('.ajax-loader').css("visibility", "hidden");
+      }
+      catch(error){
+        alert("Ha ocurrido un error al detectar las intenciones");
+          $('.ajax-loader').css("visibility", "hidden");
+      }
 
       console.log(rwatson);
     }
@@ -113,7 +119,16 @@ var settings2 = {
 
 $.ajax(settings2).done(function (response2) {
   var remociones = JSON.parse(response2);
-$("input#tono").val(remociones.document_tone.tones["0"].tone_name);
+  try {
+    $("input#tono").val(remociones.document_tone.tones["0"].tone_name);
+
+  } catch (e) {
+    alert("Ha ocurrido un error al detectar el tono");
+    $('.ajax-loader').css("visibility", "hidden");
+
+
+
+  }
 
 
 });
